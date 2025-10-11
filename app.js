@@ -207,10 +207,83 @@ class Game {
       W/S - Вертикальное смешение<br>
       Q/E - Приближение/отдаление<br>
       <br>
-      <strong>Общее:</strong><br>
-      ---
+      <br>
+      <strong>Экспорт:</strong><br>
+      <button id="exportOBJ" class="button">Экспорт в  OBJ </button><br>
+      <button id="exportGLTF" class="button">Экспорт в GLTF</button><br>
+      <button id="exportSTL" class="button">Экспорт в  STL </button><br>
+      <br>
     `;
     document.body.appendChild(controlsDiv);
+
+    // Добавляем обработчики для кнопок экспорта
+    document.getElementById("exportOBJ").addEventListener("click", () => {
+      this.exportMeshToOBJ();
+    });
+
+    document.getElementById("exportGLTF").addEventListener("click", () => {
+      this.exportMeshToGLTF();
+    });
+
+    document.getElementById("exportSTL").addEventListener("click", () => {
+      this.exportMeshToSTL();
+    });
+  }
+
+  // Экспорт в OBJ
+  exportMeshToOBJ() {
+    if (!this.meshLoader || !this.meshLoader.mesh) {
+      console.warn("No mesh to export");
+      return;
+    }
+
+    const exporter = new THREE.OBJExporter();
+    const result = exporter.parse(this.meshLoader.mesh);
+    this.downloadFile(result, "mesh.obj", "text/plain");
+  }
+
+  // Экспорт в GLTF
+  exportMeshToGLTF() {
+    if (!this.meshLoader || !this.meshLoader.mesh) {
+      console.warn("No mesh to export");
+      return;
+    }
+
+    const exporter = new THREE.GLTFExporter();
+    exporter.parse(
+      this.meshLoader.mesh,
+      (gltf) => {
+        this.downloadFile(
+          JSON.stringify(gltf),
+          "mesh.gltf",
+          "application/json"
+        );
+      },
+      { binary: false } //{ binary: true } для .glb
+    );
+  }
+
+  // Экспорт в STL (для 3D печати)
+  exportMeshToSTL() {
+    if (!this.meshLoader || !this.meshLoader.mesh) {
+      console.warn("No mesh to export");
+      return;
+    }
+
+    const exporter = new THREE.STLExporter();
+    const result = exporter.parse(this.meshLoader.mesh, { binary: false });
+    this.downloadFile(result, "mesh.stl", "application/octet-stream");
+  }
+
+  // Утилита для скачивания файла
+  downloadFile(content, filename, contentType) {
+    const blob = new Blob([content], { type: contentType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   start() {
