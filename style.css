@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+#container-3d {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Если нужно чтобы сцена была на заднем плане */
+}
+
+#canvas-3d {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.open-button {
+  border-radius: 5px;
+  padding: 7px;
+  color: rgb(0, 0, 0);
+  background: rgb(114, 255, 89);
+}

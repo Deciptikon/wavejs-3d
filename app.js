@@ -1,0 +1,224 @@
+import MeshLoader from "./mesh-loader.js";
+import Scene3d from "./scene3d.js";
+
+class Game {
+  constructor() {
+    this.scene3d = null;
+    this.meshLoader = null;
+
+    this.keys = {};
+    this.isRunning = false;
+
+    // Сферические координаты камеры
+    this.cameraRadius = 15; // расстояние до цели
+    this.cameraTheta = Math.PI / 4; // вертикальный угол (0 - сверху, π/2 - сбоку)
+    this.cameraPhi = 0; // горизонтальный угол
+
+    // Ограничения углов
+    this.minTheta = 0.1; // минимальный вертикальный угол
+    this.maxTheta = Math.PI - 0.1; // максимальный вертикальный угол
+
+    this.targetPosition = new THREE.Vector3(0, 0, 0);
+
+    // Переменные для управления мышью
+    this.isMouseDown = false;
+    this.lastMouseX = 0;
+    this.lastMouseY = 0;
+    this.mouseSensitivity = 0.01;
+
+    this.init();
+  }
+
+  init() {
+    // Инициализируем менеджер сцены
+    this.scene3d = new Scene3d();
+    this.meshLoader = new MeshLoader(this.scene3d.getScene());
+
+    // Настраиваем управление
+    this.setupControls();
+
+    this.addControlsInfo();
+
+    // Обновляем камеру с начальными параметрами
+    this.updateCamera();
+
+    // Запускаем игровой цикл
+    this.start();
+  }
+
+  setupControls() {
+    // Обработка нажатий клавиш
+    window.addEventListener("keydown", (e) => {
+      this.keys[e.code] = true;
+    });
+
+    window.addEventListener("keyup", (e) => {
+      this.keys[e.code] = false;
+    });
+
+    // Обработка мыши
+    const canvas = this.scene3d.getRenderer().domElement;
+
+    // Нажатие левой кнопки мыши
+    canvas.addEventListener("mousedown", (e) => {
+      if (e.button === 0) {
+        this.isMouseDown = true;
+        this.lastMouseX = e.clientX;
+        this.lastMouseY = e.clientY;
+        canvas.style.cursor = "grabbing";
+      }
+    });
+
+    // Отпускание кнопки мыши
+    canvas.addEventListener("mouseup", (e) => {
+      if (e.button === 0) {
+        this.isMouseDown = false;
+        canvas.style.cursor = "grab";
+      }
+    });
+
+    // Выход курсора за пределы canvas
+    canvas.addEventListener("mouseleave", () => {
+      this.isMouseDown = false;
+      canvas.style.cursor = "default";
+    });
+
+    // Движение мыши
+    canvas.addEventListener("mousemove", (e) => {
+      if (!this.isMouseDown) return;
+
+      const deltaX = e.clientX - this.lastMouseX;
+      const deltaY = e.clientY - this.lastMouseY;
+
+      // Горизонтальное вращение
+      this.cameraPhi += deltaX * this.mouseSensitivity;
+
+      // Вертикальное вращение с ограничениями
+      this.cameraTheta -= deltaY * this.mouseSensitivity;
+      this.cameraTheta = Math.max(
+        this.minTheta,
+        Math.min(this.maxTheta, this.cameraTheta)
+      );
+
+      this.lastMouseX = e.clientX;
+      this.lastMouseY = e.clientY;
+
+      this.updateCamera();
+    });
+
+    // Колесо мыши для изменения радиуса
+    canvas.addEventListener(
+      "wheel",
+      (e) => {
+        e.preventDefault();
+        const zoomSpeed = 0.001;
+        this.cameraRadius *= 1 + e.deltaY * zoomSpeed;
+        this.cameraRadius = Math.max(3, Math.min(50, this.cameraRadius));
+        this.updateCamera();
+      },
+      { passive: false }
+    );
+
+    // Устанавливаем начальный курсор
+    canvas.style.cursor = "grab";
+  }
+
+  update() {
+    let moved = false;
+
+    // Изменение радиуса - приближение/отдаление (Q/E)
+    if (this.keys["KeyQ"]) {
+      this.cameraRadius -= 0.2;
+      this.cameraRadius = Math.max(3, this.cameraRadius);
+      moved = true;
+    }
+    if (this.keys["KeyE"]) {
+      this.cameraRadius += 0.2;
+      this.cameraRadius = Math.min(50, this.cameraRadius);
+      moved = true;
+    }
+
+    // Горизонтальное вращение (A/D)
+    if (this.keys["KeyA"]) {
+      this.cameraPhi += 0.03;
+      moved = true;
+    }
+    if (this.keys["KeyD"]) {
+      this.cameraPhi -= 0.03;
+      moved = true;
+    }
+
+    // Вертикальное вращение (W/S)
+    if (this.keys["KeyW"]) {
+      this.cameraTheta -= 0.03;
+      this.cameraTheta = Math.max(this.minTheta, this.cameraTheta);
+      moved = true;
+    }
+    if (this.keys["KeyS"]) {
+      this.cameraTheta += 0.03;
+      this.cameraTheta = Math.min(this.maxTheta, this.cameraTheta);
+      moved = true;
+    }
+
+    if (moved) {
+      this.updateCamera();
+    }
+  }
+
+  updateCamera() {
+    // Преобразуем сферические координаты в декартовы
+    const cameraX =
+      this.targetPosition.x +
+      this.cameraRadius * Math.sin(this.cameraTheta) * Math.cos(this.cameraPhi);
+    const cameraY =
+      this.targetPosition.y + this.cameraRadius * Math.cos(this.cameraTheta);
+    const cameraZ =
+      this.targetPosition.z +
+      this.cameraRadius * Math.sin(this.cameraTheta) * Math.sin(this.cameraPhi);
+
+    const cameraPosition = new THREE.Vector3(cameraX, cameraY, cameraZ);
+
+    // Обновляем камеру в сцене
+    this.scene3d.updateCamera([cameraPosition, this.targetPosition]);
+  }
+
+  animate() {
+    if (!this.isRunning) return;
+
+    requestAnimationFrame(() => this.animate());
+
+    this.update();
+    this.scene3d.render();
+  }
+
+  addControlsInfo() {
+    const controlsDiv = document.createElement("div");
+    controlsDiv.className = "controls";
+    controlsDiv.innerHTML = `
+      <strong>Управление камерой (сферическая система):</strong><br>
+      Мышь (левая кнопка + перемещение) - Вращение<br>
+      Колесо мыши - Приближение/отдаление<br>
+      A/D - Горизонтальное вращение<br>
+      W/S - Вертикальное вращение<br>
+      Q/E - Приближение/отдаление<br>
+      <br>
+      <strong>Общее:</strong><br>
+      Space - вкл/выкл траекторию
+    `;
+    document.body.appendChild(controlsDiv);
+  }
+
+  start() {
+    this.isRunning = true;
+    this.animate();
+  }
+
+  stop() {
+    this.isRunning = false;
+  }
+}
+
+// Запускаем игру когда страница загружена
+window.addEventListener("DOMContentLoaded", () => {
+  new Game();
+});
