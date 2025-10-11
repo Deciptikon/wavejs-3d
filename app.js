@@ -10,9 +10,9 @@ class Game {
     this.isRunning = false;
 
     // Сферические координаты камеры
-    this.cameraRadius = 15; // расстояние до цели
+    this.cameraRadius = 7; // расстояние до цели
     this.cameraTheta = Math.PI / 4; // вертикальный угол (0 - сверху, π/2 - сбоку)
-    this.cameraPhi = 0; // горизонтальный угол
+    this.cameraPhi = Math.PI / 2; // горизонтальный угол
 
     // Ограничения углов
     this.minTheta = 0.1; // минимальный вертикальный угол
@@ -24,7 +24,8 @@ class Game {
     this.isMouseDown = false;
     this.lastMouseX = 0;
     this.lastMouseY = 0;
-    this.mouseSensitivity = 0.01;
+    this.mouseSensitivity = 0.005;
+    this.keySensitivity = 0.01;
 
     this.init();
   }
@@ -140,23 +141,27 @@ class Game {
 
     // Горизонтальное вращение (A/D)
     if (this.keys["KeyA"]) {
-      this.cameraPhi += 0.03;
+      //this.cameraPhi += this.keySensitivity;
+      this.targetPosition.x -= this.keySensitivity;
       moved = true;
     }
     if (this.keys["KeyD"]) {
-      this.cameraPhi -= 0.03;
+      //this.cameraPhi -= this.keySensitivity;
+      this.targetPosition.x += this.keySensitivity;
       moved = true;
     }
 
     // Вертикальное вращение (W/S)
     if (this.keys["KeyW"]) {
-      this.cameraTheta -= 0.03;
-      this.cameraTheta = Math.max(this.minTheta, this.cameraTheta);
+      //this.cameraTheta -= this.keySensitivity;
+      //this.cameraTheta = Math.max(this.minTheta, this.cameraTheta);
+      this.targetPosition.z -= this.keySensitivity;
       moved = true;
     }
     if (this.keys["KeyS"]) {
-      this.cameraTheta += 0.03;
-      this.cameraTheta = Math.min(this.maxTheta, this.cameraTheta);
+      //this.cameraTheta += this.keySensitivity;
+      //this.cameraTheta = Math.min(this.maxTheta, this.cameraTheta);
+      this.targetPosition.z += this.keySensitivity;
       moved = true;
     }
 
@@ -195,15 +200,15 @@ class Game {
     const controlsDiv = document.createElement("div");
     controlsDiv.className = "controls";
     controlsDiv.innerHTML = `
-      <strong>Управление камерой (сферическая система):</strong><br>
-      Мышь (левая кнопка + перемещение) - Вращение<br>
+      <strong>Управление камерой:</strong><br>
+      Мышь (левая кнопка) - Вращение<br>
       Колесо мыши - Приближение/отдаление<br>
-      A/D - Горизонтальное вращение<br>
-      W/S - Вертикальное вращение<br>
+      A/D - Горизонтальное смещение<br>
+      W/S - Вертикальное смешение<br>
       Q/E - Приближение/отдаление<br>
       <br>
       <strong>Общее:</strong><br>
-      Space - вкл/выкл траекторию
+      ---
     `;
     document.body.appendChild(controlsDiv);
   }
