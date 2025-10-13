@@ -48,9 +48,9 @@ export default class MeshLoader {
     const uvs = [];
     const indices = [];
 
-    const scaleX = 10 / width;
-    const scaleZ = 10 / width;
-    const scaleY = 0.5;
+    const scaleX = 1;
+    const scaleZ = 1;
+    const scaleY = 1;
 
     // Карта для отслеживания индексов вершин (чтобы не добавлять дубликаты)
     const vertexMap = new Map();
@@ -124,6 +124,15 @@ export default class MeshLoader {
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.x = -(width * scaleX) / 2;
     this.mesh.position.z = -(height * scaleZ) / 2;
+
+    const scale = 0.29;
+    const maxH = 1.08;
+    const minH = -0.95;
+
+    const h = maxH - minH;
+    const sy = h / 255;
+    this.mesh.scale.set(1 / scale, 1 / sy, 1 / scale);
+
     this.scene.add(this.mesh);
 
     console.log(
@@ -133,32 +142,6 @@ export default class MeshLoader {
       indices.length / 3,
       "triangles"
     );
-  }
-  // Метод для добавления цветов на основе высоты
-  addVertexColors(geometry) {
-    const colors = [];
-    const positions = geometry.attributes.position.array;
-
-    for (let i = 0; i < positions.length; i += 3) {
-      const height = positions[i + 1] / 2; // нормализованная высота (0-1)
-
-      const color = new THREE.Color();
-
-      color.setRGB(1.0, 0.3, 0.8);
-      /** 
-      // Градиент в зависимости от высоты
-      if (height < 0.3) {
-        color.setRGB(0, 0.3, 0.8); // синий - низкие участки
-      } else if (height < 0.6) {
-        color.setRGB(0.2, 0.7, 0.2); // зеленый - средние высоты
-      } else {
-        color.setRGB(0.5, 0.3, 0.1); // коричневый - высокие участки
-      }*/
-
-      colors.push(color.r, color.g, color.b);
-    }
-
-    geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   }
 
   updateMesh() {
@@ -173,6 +156,12 @@ export default class MeshLoader {
         "No image data found in localStorage with key:",
         this.loadKey
       );
+    }
+  }
+
+  scaleMeshY(scaleY) {
+    if (this.meshLoader && this.meshLoader.mesh) {
+      this.meshLoader.mesh.scale.y = scaleY;
     }
   }
 
