@@ -131,7 +131,7 @@ export default class MeshLoader {
 
     const h = maxH - minH;
     const sy = h / 255;
-    //this.mesh.scale.set(1 / scale, 5, 1 / scale);
+    this.mesh.scale.set(scale, 1, scale);
 
     this.scene.add(this.mesh);
 
