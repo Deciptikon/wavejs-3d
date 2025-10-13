@@ -125,7 +125,7 @@ export default class MeshLoader {
     this.mesh.position.x = -(width * scaleX) / 2;
     this.mesh.position.z = -(height * scaleZ) / 2;
 
-    const scale = 1; //0.29;
+    const scale = 0.29;
     const maxH = 5; //1.08;
     const minH = 0; //-0.95;
 
