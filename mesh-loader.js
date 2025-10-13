@@ -70,6 +70,10 @@ export default class MeshLoader {
         const b = data[pixelIndex + 2];
         const brightness = (r + g + b) / 3;
 
+        if (r === 150 && g === 100 && b === 100) {
+          continue;
+        }
+
         // Преобразуем в высоту
         const heightValue = (brightness / 255) * scaleY;
 
