@@ -125,13 +125,13 @@ export default class MeshLoader {
     this.mesh.position.x = -(width * scaleX) / 2;
     this.mesh.position.z = -(height * scaleZ) / 2;
 
-    const scale = 0.29;
-    const maxH = 1.08;
-    const minH = -0.95;
+    const scale = 1; //0.29;
+    const maxH = 5; //1.08;
+    const minH = 0; //-0.95;
 
     const h = maxH - minH;
     const sy = h / 255;
-    this.mesh.scale.set(1 / scale, 1 / sy, 1 / scale);
+    //this.mesh.scale.set(1 / scale, 5, 1 / scale);
 
     this.scene.add(this.mesh);
 
