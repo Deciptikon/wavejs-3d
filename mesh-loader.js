@@ -38,136 +38,102 @@ export default class MeshLoader {
 
     console.log("Creating mesh from image:", width, "x", height);
 
-    // Удаляем старый меш если есть
     if (this.mesh) {
       this.scene.remove(this.mesh);
     }
 
-    // Создаем пустую геометрию
     const geometry = new THREE.BufferGeometry();
-
-    // Массивы для вершин, нормалей, цветов и UV-координат
     const vertices = [];
-    const normals = [];
     const colors = [];
     const uvs = [];
     const indices = [];
 
-    // Параметры масштабирования
-    const scaleX = 10 / width; // Ширина меша = 10 единиц
-    const scaleZ = 10 / width; // Глубина меша = 10 единиц (квадратный)
-    const scaleY = 0.5; // Максимальная высота
+    const scaleX = 10 / width;
+    const scaleZ = 10 / width;
+    const scaleY = 0.5;
 
-    let vertexCount = 0;
+    // Карта для отслеживания индексов вершин (чтобы не добавлять дубликаты)
+    const vertexMap = new Map();
+    let currentVertexIndex = 0;
 
-    // Проходим по каждому пикселю изображения
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        // Получаем яркость пикселя
-        const pixelIndex = (y * width + x) * 4;
-        const r = data[pixelIndex];
-        const g = data[pixelIndex + 1];
-        const b = data[pixelIndex + 2];
-        const brightness = (r + g + b) / 3;
+    // Функция для получения/создания индекса вершины
+    const getVertexIndex = (x, y) => {
+      const key = `${x},${y}`;
+      if (vertexMap.has(key)) {
+        return vertexMap.get(key);
+      }
 
-        if (r === 150 && g === 100 && b === 100) {
+      const pixelIndex = (y * width + x) * 4;
+      const r = data[pixelIndex];
+      const g = data[pixelIndex + 1];
+      const b = data[pixelIndex + 2];
+
+      // Пропускаем пустые пиксели
+      if (r === 150 && g === 100 && b === 100) {
+        vertexMap.set(key, -1); // Помечаем как пустую
+        return -1;
+      }
+
+      // Добавляем вершину
+      const brightness = (r + g + b) / 3;
+      const heightValue = (brightness / 255) * scaleY;
+
+      vertices.push(x * scaleX, heightValue, y * scaleZ);
+      colors.push(heightValue / scaleY, 0.3, 0.8);
+      uvs.push(x / width, 1 - y / height);
+
+      vertexMap.set(key, currentVertexIndex);
+      return currentVertexIndex++;
+    };
+
+    // Создаем вершины и индексы
+    for (let y = 0; y < height - 1; y++) {
+      for (let x = 0; x < width - 1; x++) {
+        const tl = getVertexIndex(x, y);
+        const tr = getVertexIndex(x + 1, y);
+        const bl = getVertexIndex(x, y + 1);
+        const br = getVertexIndex(x + 1, y + 1);
+
+        // Пропускаем если есть пустые вершины
+        if (tl === -1 || tr === -1 || bl === -1 || br === -1) {
           continue;
         }
 
-        // Преобразуем в высоту
-        const heightValue = (brightness / 255) * scaleY;
-
-        // Вычисляем позицию вершины
-        const posX = x * scaleX - 0; // Центрируем по X (-5 до +5)
-        const posZ = y * scaleZ - 0; // Центрируем по Z (-5 до +5)
-        const posY = heightValue;
-
-        // Добавляем вершину
-        vertices.push(posX, posY, posZ);
-
-        // Добавляем нормаль (временно вертикальную, вычислим позже)
-        normals.push(0, 1, 0);
-
-        // Добавляем цвет на основе высоты
-        const color = new THREE.Color();
-        color.setRGB(heightValue / scaleY, 0.3, 0.8);
-        /**if (heightValue < scaleY * 0.3) {
-          color.setRGB(0, 0.3, 0.8); // Синий - низкие участки
-        } else if (heightValue < scaleY * 0.6) {
-          color.setRGB(0.2, 0.7, 0.2); // Зеленый - средние высоты
-        } else {
-          color.setRGB(0.5, 0.3, 0.1); // Коричневый - высокие участки
-        }*/
-        colors.push(color.r, color.g, color.b);
-
-        // Добавляем UV-координаты
-        uvs.push(x / width, 1 - y / height); // Переворачиваем Y для UV
-
-        vertexCount++;
+        // Добавляем два треугольника
+        indices.push(tl, tr, bl);
+        indices.push(tr, br, bl);
       }
     }
 
-    console.log("Created", vertexCount, "vertices");
-
-    // Создаем индексы для треугольников (два треугольника на каждый квад из 4 вершин)
-    for (let y = 0; y < height - 1; y++) {
-      for (let x = 0; x < width - 1; x++) {
-        // Индексы четырех вершин текущего квада
-        const topLeft = y * width + x;
-        const topRight = y * width + (x + 1);
-        const bottomLeft = (y + 1) * width + x;
-        const bottomRight = (y + 1) * width + (x + 1);
-
-        // Первый треугольник: topLeft -> topRight -> bottomLeft
-        indices.push(topLeft, topRight, bottomLeft);
-
-        // Второй треугольник: topRight -> bottomRight -> bottomLeft
-        indices.push(topRight, bottomRight, bottomLeft);
-      }
-    }
-
-    console.log("Created", indices.length / 3, "triangles");
-
-    // Преобразуем массивы в типизированные массивы
-    const positionArray = new Float32Array(vertices);
-    const normalArray = new Float32Array(normals);
-    const colorArray = new Float32Array(colors);
-    const uvArray = new Float32Array(uvs);
-    const indexArray = new Uint32Array(indices);
-
-    // Устанавливаем атрибуты геометрии
+    // Устанавливаем атрибуты
     geometry.setAttribute(
       "position",
-      new THREE.BufferAttribute(positionArray, 3)
+      new THREE.Float32BufferAttribute(vertices, 3)
     );
-    geometry.setAttribute("normal", new THREE.BufferAttribute(normalArray, 3));
-    geometry.setAttribute("color", new THREE.BufferAttribute(colorArray, 3));
-    geometry.setAttribute("uv", new THREE.BufferAttribute(uvArray, 2));
-    geometry.setIndex(new THREE.BufferAttribute(indexArray, 1));
-
-    // Вычисляем нормали (это перезапишет наши временные нормали)
+    geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+    geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+    geometry.setIndex(indices);
     geometry.computeVertexNormals();
 
-    // Создаем материал
     const material = new THREE.MeshStandardMaterial({
       vertexColors: true,
       wireframe: false,
       side: THREE.DoubleSide,
     });
 
-    // Создаем меш
     this.mesh = new THREE.Mesh(geometry, material);
-
-    // Поворачиваем для вида сверху (если нужно)
     this.mesh.position.x = -(width * scaleX) / 2;
     this.mesh.position.z = -(height * scaleZ) / 2;
-
-    // Добавляем в сцену
     this.scene.add(this.mesh);
 
-    console.log("Mesh created successfully with manual geometry");
+    console.log(
+      "Mesh created with",
+      vertices.length / 3,
+      "vertices and",
+      indices.length / 3,
+      "triangles"
+    );
   }
-
   // Метод для добавления цветов на основе высоты
   addVertexColors(geometry) {
     const colors = [];
