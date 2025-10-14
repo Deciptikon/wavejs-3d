@@ -41,15 +41,13 @@ class Game {
     this.globalScaleElement = document.getElementById("globalScale");
     this.globalScale = parseFloat(this.globalScaleElement.value);
     this.globalScaleElement.addEventListener("input", () => {
-      this.globalScale = parseFloat(this.globalScaleElement.value);
-      this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
+      this.fullUpdate();
     });
 
     this.amplitudeElement = document.getElementById("amplitude");
     this.amplitude = parseFloat(this.amplitudeElement.value);
     this.amplitudeElement.addEventListener("input", () => {
-      this.amplitude = parseFloat(this.amplitudeElement.value);
-      this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
+      this.fullUpdate();
     });
 
     this.cellSizeElement = document.getElementById("cellSize");
@@ -63,10 +61,7 @@ class Game {
     this.meshLoader = new MeshLoader(this.scene3d.getScene());
 
     setTimeout(() => {
-      this.amplitude = parseFloat(this.amplitudeElement.value);
-      this.globalScale = parseFloat(this.globalScaleElement.value);
-      this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
-      this.gridUpdate();
+      this.fullUpdate();
     }, 500);
 
     //this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
@@ -95,6 +90,14 @@ class Game {
 
     const w = p / f;
     this.scene3d.createGrid(w * f, w);
+  }
+
+  fullUpdate() {
+    this.amplitude = parseFloat(this.amplitudeElement.value);
+    this.globalScale = parseFloat(this.globalScaleElement.value);
+    this.cellSize = parseInt(this.cellSizeElement.value);
+    this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
+    this.gridUpdate();
   }
 
   setupControls() {
