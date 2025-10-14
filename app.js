@@ -66,7 +66,10 @@ class Game {
 
     setTimeout(() => {
       this.fullUpdate();
-      if (this.params.Scale) this.cameraRadius *= this.params.Scale; //*= Math.max(0.1, this.params.Scale);
+      if (this.params.Scale) {
+        this.cameraRadius *= Math.sqrt(this.params.Scale);
+        this.updateCamera();
+      }
     }, 500);
 
     //this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
