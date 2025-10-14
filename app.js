@@ -25,7 +25,7 @@ class Game {
     this.lastMouseX = 0;
     this.lastMouseY = 0;
     this.mouseSensitivity = 0.005;
-    this.keySensitivity = 0.01;
+    this.keySensitivity = 0.1;
 
     this.globalScaleElement = null;
     this.globalScale = 0.03;
@@ -80,7 +80,7 @@ class Game {
     this.scene3d = new Scene3d();
     this.meshLoader = new MeshLoader(this.scene3d.getScene());
 
-    this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
+    //this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
 
     // Настраиваем управление
     this.setupControls();

@@ -136,6 +136,8 @@ export default class MeshLoader {
       indices.length / 3,
       "triangles"
     );
+
+    this.centeredMesh(this.globalScale, this.amplitude);
   }
 
   updateMesh() {
