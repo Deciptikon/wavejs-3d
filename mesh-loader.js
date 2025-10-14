@@ -160,7 +160,7 @@ export default class MeshLoader {
       if (scale) this.globalScale = scale;
       if (amplitude) this.amplitude = amplitude;
 
-      const sy = this.amplitude * 0.001;
+      const sy = this.amplitude;
       console.log("centeredMesh");
 
       this.mesh.scale.set(this.globalScale, sy, this.globalScale);

@@ -5,6 +5,7 @@ class Game {
   constructor() {
     this.scene3d = null;
     this.meshLoader = null;
+    this.params = {};
 
     this.keys = {};
     this.isRunning = false;
@@ -29,10 +30,9 @@ class Game {
     this.mouseSensitivity = 0.005;
     this.keySensitivity = 0.3;
 
-    this.globalScaleElement = null;
     this.globalScale = 0.03;
-    this.amplitudeElement = null;
     this.amplitude = 100;
+
     this.cellSizeElement = null;
     this.cellSize = 1000;
 
@@ -66,6 +66,7 @@ class Game {
 
     setTimeout(() => {
       this.fullUpdate();
+      if (this.params.Scale) this.cameraRadius *= this.params.Scale; //*= Math.max(0.1, this.params.Scale);
     }, 500);
 
     //this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
@@ -98,6 +99,7 @@ class Game {
 
   fullUpdate() {
     const p = this.loadParams();
+    this.params = p;
     console.log(p);
 
     this.amplitude = p.max - p.min;
