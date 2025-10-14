@@ -40,45 +40,34 @@ class Game {
   init() {
     this.globalScaleElement = document.getElementById("globalScale");
     this.globalScale = parseFloat(this.globalScaleElement.value);
-    console.log("this.globalScale = ", this.globalScale);
-
     this.globalScaleElement.addEventListener("input", () => {
       this.globalScale = parseFloat(this.globalScaleElement.value);
-      console.log("this.globalScale = ", this.globalScale);
       this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
     });
 
     this.amplitudeElement = document.getElementById("amplitude");
     this.amplitude = parseFloat(this.amplitudeElement.value);
-    console.log("this.amplitude = ", this.amplitude);
-
     this.amplitudeElement.addEventListener("input", () => {
       this.amplitude = parseFloat(this.amplitudeElement.value);
-      console.log("this.amplitude = ", this.amplitude);
       this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
     });
 
     this.cellSizeElement = document.getElementById("cellSize");
     this.cellSize = parseInt(this.cellSizeElement.value);
-    console.log("this.cellSize = ", this.cellSize);
-
     document.getElementById("cellSize").addEventListener("change", (e) => {
-      this.cellSize = parseInt(this.cellSizeElement.value);
-      const s = this.meshLoader.getSize();
-      const f = this.cellSize * 0.001;
-      let p = 10;
-
-      if (s.height && s.width) {
-        p = Math.ceil(Math.max(s.width, s.height) * this.globalScale);
-      }
-
-      const w = p / f;
-      this.scene3d.createGrid(w * f, w);
+      this.gridUpdate();
     });
 
     // Инициализируем менеджер сцены
     this.scene3d = new Scene3d();
     this.meshLoader = new MeshLoader(this.scene3d.getScene());
+
+    setTimeout(() => {
+      this.amplitude = parseFloat(this.amplitudeElement.value);
+      this.globalScale = parseFloat(this.globalScaleElement.value);
+      this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
+      this.gridUpdate();
+    }, 500);
 
     //this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
 
@@ -92,6 +81,20 @@ class Game {
 
     // Запускаем игровой цикл
     this.start();
+  }
+
+  gridUpdate() {
+    this.cellSize = parseInt(this.cellSizeElement.value);
+    const s = this.meshLoader.getSize();
+    const f = this.cellSize * 0.001;
+    let p = 10;
+
+    if (s.height && s.width) {
+      p = Math.ceil(Math.max(s.width, s.height) * this.globalScale);
+    }
+
+    const w = p / f;
+    this.scene3d.createGrid(w * f, w);
   }
 
   setupControls() {
