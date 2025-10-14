@@ -18,6 +18,8 @@ class Game {
     this.minTheta = 0.1; // минимальный вертикальный угол
     this.maxTheta = Math.PI - 0.1; // максимальный вертикальный угол
 
+    this.autoRotate = false;
+
     this.targetPosition = new THREE.Vector3(0, 0, 0);
 
     // Переменные для управления мышью
@@ -219,6 +221,11 @@ class Game {
       moved = true;
     }
 
+    if (this.autoRotate) {
+      moved = true;
+      this.cameraPhi += this.mouseSensitivity;
+    }
+
     if (moved) {
       this.updateCamera();
     }
@@ -267,6 +274,8 @@ class Game {
       <button id="exportGLTF" class="button">Экспорт в GLTF</button><br>
       <button id="exportSTL" class="button">Экспорт в  STL </button><br>
       <br>
+      <button id="autoRotate" class="button">Автовращение</button><br>
+      <br>
     `;
     document.body.appendChild(controlsDiv);
 
@@ -281,6 +290,10 @@ class Game {
 
     document.getElementById("exportSTL").addEventListener("click", () => {
       this.exportMeshToSTL();
+    });
+
+    document.getElementById("autoRotate").addEventListener("click", () => {
+      this.switchAutorotate();
     });
   }
 
@@ -338,6 +351,18 @@ class Game {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  switchAutorotate() {
+    this.autoRotate = !this.autoRotate;
+    const autoRotateButton = document.getElementById("autoRotate");
+
+    // Переключаем класс в зависимости от состояния
+    if (this.autoRotate) {
+      autoRotateButton.classList.add("active");
+    } else {
+      autoRotateButton.classList.remove("active");
+    }
   }
 
   start() {

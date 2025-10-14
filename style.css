@@ -45,6 +45,14 @@ canvas {
   border-color: azure;
 }
 
+.button.active {
+  border-radius: 5px;
+  padding: 7px;
+  color: rgb(17, 255, 0);
+  background: rgba(38, 255, 0, 0);
+  border-color: rgb(17, 255, 0);
+}
+
 .scale-controls {
   position: absolute;
   bottom: 10px;
