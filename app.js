@@ -277,12 +277,12 @@ class Game {
     const controlsDiv = document.createElement("div");
     controlsDiv.className = "controls";
     controlsDiv.innerHTML = `
-      <strong>Управление камерой:</strong><br>
-      Мышь (левая кнопка) - Вращение<br>
-      Колесо мыши - Приближение/отдаление<br>
-      A/D - Горизонтальное смещение<br>
-      W/S - Вертикальное смешение<br>
-      Q/E - Приближение/отдаление<br>
+      <strong>Управление:</strong><br>
+      Мышь - Вращение<br>
+      Колесо - Зум<br>
+      A/D - Влево/Вправо<br>
+      W/S - Вперёд/Назад<br>
+      Q/E - Зум<br>
       <br>
       <br>
       <strong>Экспорт:</strong><br>
