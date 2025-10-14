@@ -87,6 +87,8 @@ export default class Scene3d {
       this.scene.remove(this.grid);
     }
 
+    console.log("size =", size, "   divisions =", divisions);
+
     this.grid = new THREE.GridHelper(size, divisions, 0x000000, 0x000000);
 
     this.grid.material.opacity = 0.2;
