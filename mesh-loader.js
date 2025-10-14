@@ -6,7 +6,7 @@ export default class MeshLoader {
 
     this.width = null; //px
     this.height = null; //px
-    this.amplitude = 100; // mkm
+    this.amplitude = 1000; // mkm
     this.globalScale = 0.3;
 
     // Создаем временный canvas для преобразования изображения
@@ -14,7 +14,7 @@ export default class MeshLoader {
     this.tempCtx = this.tempCanvas.getContext("2d");
 
     this.updateMesh();
-    this.centeredMesh(this.globalScale, this.amplitude);
+    //this.centeredMesh(this.globalScale, this.amplitude);
   }
 
   loadData() {

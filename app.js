@@ -65,21 +65,22 @@ class Game {
     document.getElementById("cellSize").addEventListener("change", (e) => {
       this.cellSize = parseInt(this.cellSizeElement.value);
       const s = this.meshLoader.getSize();
+      const f = this.cellSize * 0.001;
+      let p = 10;
+
       if (s.height && s.width) {
-        const f = this.cellSize / 1000;
-        const p = Math.ceil(Math.max(s) * this.globalScale);
-        const w = p / f;
-        this.scene3d.createGrid(w * f, w);
-        return;
+        p = Math.ceil(Math.max(s.width, s.height) * this.globalScale);
       }
-      const f = this.cellSize / 1000;
-      const w = 10 / f;
+
+      const w = p / f;
       this.scene3d.createGrid(w * f, w);
     });
 
     // Инициализируем менеджер сцены
     this.scene3d = new Scene3d();
     this.meshLoader = new MeshLoader(this.scene3d.getScene());
+
+    this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
 
     // Настраиваем управление
     this.setupControls();
