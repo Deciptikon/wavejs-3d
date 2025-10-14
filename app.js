@@ -40,6 +40,7 @@ class Game {
   }
 
   init() {
+    /** 
     this.globalScaleElement = document.getElementById("globalScale");
     this.globalScale = parseFloat(this.globalScaleElement.value);
     this.globalScaleElement.addEventListener("input", () => {
@@ -51,7 +52,7 @@ class Game {
     this.amplitudeElement.addEventListener("input", () => {
       this.amplitude = parseFloat(this.amplitudeElement.value);
       this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
-    });
+    });*/
 
     this.cellSizeElement = document.getElementById("cellSize");
     this.cellSize = parseInt(this.cellSizeElement.value);
@@ -96,11 +97,21 @@ class Game {
   }
 
   fullUpdate() {
-    this.amplitude = parseFloat(this.amplitudeElement.value);
-    this.globalScale = parseFloat(this.globalScaleElement.value);
+    const p = this.loadParams();
+    console.log(p);
+
+    this.amplitude = p.max - p.min;
+    this.globalScale = p.Scale;
     this.cellSize = parseInt(this.cellSizeElement.value);
     this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
     this.gridUpdate();
+  }
+
+  loadParams(key = "saved_params_wavejs") {
+    console.log("Загрузка метаданных из локального хранилища");
+
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : {};
   }
 
   setupControls() {
