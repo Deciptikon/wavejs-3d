@@ -163,8 +163,10 @@ export default class MeshLoader {
   }
 
   centeredMesh(scale, minH, maxH) {
-    if (this.meshLoader && this.meshLoader.mesh) {
+    if (this.mesh) {
       const scaleY = 1;
+      console.log("centeredMesh");
+
       this.mesh.scale.set(scale, scaleY, scale);
 
       this.mesh.position.x = (-width * scale) / 2;
