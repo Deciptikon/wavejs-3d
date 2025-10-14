@@ -10,7 +10,7 @@ class Game {
     this.isRunning = false;
 
     // Сферические координаты камеры
-    this.cameraRadius = 70; // расстояние до цели
+    this.cameraRadius = 200; // расстояние до цели
     this.cameraTheta = Math.PI / 4; // вертикальный угол (0 - сверху, π/2 - сбоку)
     this.cameraPhi = Math.PI / 2; // горизонтальный угол
 
@@ -25,7 +25,7 @@ class Game {
     this.lastMouseX = 0;
     this.lastMouseY = 0;
     this.mouseSensitivity = 0.005;
-    this.keySensitivity = 0.1;
+    this.keySensitivity = 0.3;
 
     this.globalScaleElement = null;
     this.globalScale = 0.03;
@@ -185,7 +185,7 @@ class Game {
     }
     if (this.keys["KeyE"]) {
       this.cameraRadius *= 1.02;
-      this.cameraRadius = Math.min(200, this.cameraRadius);
+      this.cameraRadius = Math.min(1000, this.cameraRadius);
       moved = true;
     }
 
