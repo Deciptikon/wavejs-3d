@@ -169,8 +169,8 @@ export default class MeshLoader {
 
       this.mesh.scale.set(scale, scaleY, scale);
 
-      this.mesh.position.x = (-width * scale) / 2;
-      this.mesh.position.z = (-height * scale) / 2;
+      this.mesh.position.x = (-this.width * scale) / 2;
+      this.mesh.position.z = (-this.height * scale) / 2;
     }
   }
 
