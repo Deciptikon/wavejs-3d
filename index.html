@@ -37,51 +37,37 @@
         </tr>
 
         <tr>
-          <td>Шаг сетки:</td>
+          <td>Высота:</td>
           <td>
             <input
               type="number"
-              id="cellSize"
-              value="1000"
-              step="1"
-              min="1"
-              max="10000"
-            />
-            <span> мкм</span>
-          </td>
-        </tr>
-        <tr>
-          <td>Макс. высота:</td>
-          <td>
-            <input
-              type="number"
-              id="maxHeight"
+              id="amplitude"
               value="100"
               step="1"
-              min="-10000"
+              min="0"
               max="10000"
             />
             <span> мкм</span>
           </td>
         </tr>
+
         <tr>
-          <td>Мин. высота:</td>
+          <td>Шаг сетки:</td>
           <td>
-            <input
-              type="number"
-              id="minHeight"
-              value="-100"
-              step="1"
-              min="-10000"
-              max="10000"
-            />
-            <span> мкм</span>
+            <select id="cellSize">
+              <option value="10">10 мкм</option>
+              <option value="100">100 мкм</option>
+              <option value="1000" selected>1 мм</option>
+              <option value="10000">1 см</option>
+              <option value="100000">10 см</option>
+            </select>
           </td>
         </tr>
       </table>
     </div>
 
-    <script type="module" src="mesh-loader.js?v=1.0.2"></script>
-    <script type="module" src="app.js?v=1.0.2"></script>
+    <script type="module" src="mesh-loader.js?v=1.0.3"></script>
+    <script type="module" src="scene3d.js?v=1.0.3"></script>
+    <script type="module" src="app.js?v=1.0.3"></script>
   </body>
 </html>

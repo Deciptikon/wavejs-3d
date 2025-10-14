@@ -82,21 +82,16 @@ export default class Scene3d {
     this.scene.add(this.ground);
   }
 
-  createGrid() {
-    // Параметры сетки
-    const size = 20; // Размер сетки (должен соответствовать размеру земли)
-    const divisions = 20; // Количество делений (1 деление = 1 метр при размере 20)
+  createGrid(size = 10, divisions = 10) {
+    if (this.grid) {
+      this.scene.remove(this.grid);
+    }
 
-    // Создаем сетку
     this.grid = new THREE.GridHelper(size, divisions, 0x000000, 0x000000);
 
-    // Настраиваем внешний вид сетки
     this.grid.material.opacity = 0.2;
     this.grid.material.transparent = true;
-
-    // Позиционируем сетку чуть выше земли, чтобы избежать конфликта z-fighting
-    this.grid.position.y = 0;
-    //this.grid.rotation.x = Math.PI / 2; // Поворачиваем горизонтально, как землю
+    //this.grid.position.y = 0;
 
     this.scene.add(this.grid);
   }

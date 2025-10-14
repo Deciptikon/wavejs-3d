@@ -4,11 +4,10 @@ export default class MeshLoader {
     this.loadKey = "saved_epure_wavejs";
     this.mesh = null;
 
-    this.width = null;
-    this.height = null;
-    this.maxH = null;
-    this.minH = null;
-    this.globalScale = null;
+    this.width = null; //px
+    this.height = null; //px
+    this.amplitude = 100; // mkm
+    this.globalScale = 0.03;
 
     // Создаем временный canvas для преобразования изображения
     this.tempCanvas = document.createElement("canvas");
@@ -127,16 +126,9 @@ export default class MeshLoader {
     });
 
     this.mesh = new THREE.Mesh(geometry, material);
-
-    const scale = 0.29;
-    const maxH = 5; //1.08;
-    const minH = 0; //-0.95;
-
-    const h = maxH - minH;
-    const sy = h / 255;
-    this.mesh.scale.set(scale, 1, scale);
-
     this.scene.add(this.mesh);
+
+    this.centeredMesh(this.globalScale, this.amplitude);
 
     console.log(
       "Mesh created with",
@@ -162,16 +154,26 @@ export default class MeshLoader {
     }
   }
 
-  centeredMesh(scale, minH, maxH) {
+  centeredMesh(scale, amplitude) {
     if (this.mesh) {
-      const scaleY = 1;
+      if (scale) this.globalScale = scale;
+      if (amplitude) this.amplitude = amplitude;
+
+      const sy = this.amplitude * 1;
       console.log("centeredMesh");
 
-      this.mesh.scale.set(scale, scaleY, scale);
+      this.mesh.scale.set(this.globalScale, sy, this.globalScale);
 
       this.mesh.position.x = (-this.width * scale) / 2;
       this.mesh.position.z = (-this.height * scale) / 2;
     }
+  }
+
+  getSize() {
+    return {
+      width: this.width,
+      height: this.height,
+    };
   }
 
   // Метод для обновления меша (если данные изменились)

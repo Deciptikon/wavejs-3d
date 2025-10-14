@@ -28,7 +28,11 @@ class Game {
     this.keySensitivity = 0.01;
 
     this.globalScaleElement = null;
-    this.globalScale = null;
+    this.globalScale = 0.03;
+    this.amplitudeElement = null;
+    this.amplitude = 100;
+    this.cellSizeElement = null;
+    this.cellSize = 1000;
 
     this.init();
   }
@@ -41,7 +45,36 @@ class Game {
     this.globalScaleElement.addEventListener("input", () => {
       this.globalScale = parseFloat(this.globalScaleElement.value);
       console.log("this.globalScale = ", this.globalScale);
-      this.meshLoader.centeredMesh(this.globalScale, 0, 100);
+      this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
+    });
+
+    this.amplitudeElement = document.getElementById("amplitude");
+    this.amplitude = parseFloat(this.amplitudeElement.value);
+    console.log("this.amplitude = ", this.amplitude);
+
+    this.amplitudeElement.addEventListener("input", () => {
+      this.amplitude = parseFloat(this.amplitudeElement.value);
+      console.log("this.amplitude = ", this.amplitude);
+      this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
+    });
+
+    this.cellSizeElement = document.getElementById("cellSize");
+    this.cellSize = parseInt(this.cellSizeElement.value);
+    console.log("this.cellSize = ", this.cellSize);
+
+    document.getElementById("cellSize").addEventListener("change", (e) => {
+      this.cellSize = parseInt(this.cellSizeElement.value);
+      const s = this.meshLoader.getSize();
+      if (s.height && s.width) {
+        const f = this.cellSize / 1000;
+        const p = Math.ceil(Math.max(s) * this.globalScale);
+        const w = p / f;
+        this.scene3d.createGrid(w * f, w);
+        return;
+      }
+      const f = this.cellSize / 1000;
+      const w = 10 / f;
+      this.scene3d.createGrid(w * f, w);
     });
 
     // Инициализируем менеджер сцены
