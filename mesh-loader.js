@@ -7,13 +7,14 @@ export default class MeshLoader {
     this.width = null; //px
     this.height = null; //px
     this.amplitude = 100; // mkm
-    this.globalScale = 0.03;
+    this.globalScale = 0.3;
 
     // Создаем временный canvas для преобразования изображения
     this.tempCanvas = document.createElement("canvas");
     this.tempCtx = this.tempCanvas.getContext("2d");
 
     this.updateMesh();
+    this.centeredMesh(this.globalScale, this.amplitude);
   }
 
   loadData() {
@@ -127,8 +128,6 @@ export default class MeshLoader {
 
     this.mesh = new THREE.Mesh(geometry, material);
     this.scene.add(this.mesh);
-
-    this.centeredMesh(this.globalScale, this.amplitude);
 
     console.log(
       "Mesh created with",
