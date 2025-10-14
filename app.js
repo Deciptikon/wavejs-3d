@@ -47,7 +47,8 @@ class Game {
     this.amplitudeElement = document.getElementById("amplitude");
     this.amplitude = parseFloat(this.amplitudeElement.value);
     this.amplitudeElement.addEventListener("input", () => {
-      this.fullUpdate();
+      this.amplitude = parseFloat(this.amplitudeElement.value);
+      this.meshLoader.centeredMesh(this.globalScale, this.amplitude);
     });
 
     this.cellSizeElement = document.getElementById("cellSize");
