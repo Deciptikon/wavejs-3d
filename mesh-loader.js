@@ -4,6 +4,12 @@ export default class MeshLoader {
     this.loadKey = "saved_epure_wavejs";
     this.mesh = null;
 
+    this.width = null;
+    this.height = null;
+    this.maxH = null;
+    this.minH = null;
+    this.globalScale = null;
+
     // Создаем временный canvas для преобразования изображения
     this.tempCanvas = document.createElement("canvas");
     this.tempCtx = this.tempCanvas.getContext("2d");
@@ -36,6 +42,9 @@ export default class MeshLoader {
     const height = imageData.height;
     const data = imageData.data;
 
+    this.width = width;
+    this.height = height;
+
     console.log("Creating mesh from image:", width, "x", height);
 
     if (this.mesh) {
@@ -47,10 +56,6 @@ export default class MeshLoader {
     const colors = [];
     const uvs = [];
     const indices = [];
-
-    const scaleX = 1;
-    const scaleZ = 1;
-    const scaleY = 1;
 
     // Карта для отслеживания индексов вершин (чтобы не добавлять дубликаты)
     const vertexMap = new Map();
@@ -76,10 +81,10 @@ export default class MeshLoader {
 
       // Добавляем вершину
       const brightness = (r + g + b) / 3;
-      const heightValue = (brightness / 255) * scaleY;
+      const heightValue = brightness / 255;
 
-      vertices.push(x * scaleX, heightValue, y * scaleZ);
-      colors.push(heightValue / scaleY, 0.3, 0.8);
+      vertices.push(x, heightValue, y);
+      colors.push(heightValue, 0.3, 0.8);
       uvs.push(x / width, 1 - y / height);
 
       vertexMap.set(key, currentVertexIndex);
@@ -122,8 +127,6 @@ export default class MeshLoader {
     });
 
     this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.position.x = -(width * scaleX) / 2;
-    this.mesh.position.z = -(height * scaleZ) / 2;
 
     const scale = 0.29;
     const maxH = 5; //1.08;
@@ -159,9 +162,13 @@ export default class MeshLoader {
     }
   }
 
-  scaleMeshY(scaleY) {
+  centeredMesh(scale, minH, maxH) {
     if (this.meshLoader && this.meshLoader.mesh) {
-      this.meshLoader.mesh.scale.y = scaleY;
+      const scaleY = 1;
+      this.mesh.scale.set(scale, scaleY, scale);
+
+      this.mesh.position.x = (-width * scale) / 2;
+      this.mesh.position.z = (-height * scale) / 2;
     }
   }
 

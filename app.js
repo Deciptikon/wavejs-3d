@@ -27,10 +27,23 @@ class Game {
     this.mouseSensitivity = 0.005;
     this.keySensitivity = 0.01;
 
+    this.globalScaleElement = null;
+    this.globalScale = null;
+
     this.init();
   }
 
   init() {
+    this.globalScaleElement = document.getElementById("globalScale");
+    this.globalScale = parseFloat(this.globalScaleElement.value);
+    console.log("this.globalScale = ", this.globalScale);
+
+    this.globalScaleElement.addEventListener("input", () => {
+      this.globalScale = parseFloat(this.globalScaleElement.value);
+      console.log("this.globalScale = ", this.globalScale);
+      this.meshLoader.centeredMesh(this.globalScale, 0, 100);
+    });
+
     // Инициализируем менеджер сцены
     this.scene3d = new Scene3d();
     this.meshLoader = new MeshLoader(this.scene3d.getScene());
